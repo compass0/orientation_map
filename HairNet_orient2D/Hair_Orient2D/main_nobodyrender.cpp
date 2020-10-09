@@ -68,7 +68,7 @@ void save_orient(string orient_image_fn, string seg_image_fn, string out_orient_
 
 void save_orient_from_folder(string input_img_folder, string hair_seg_folder, string img_name, string output_orient_img_folder)
 {
-    string input_img_fn = input_img_folder + img_name.substr(0, img_name.size() -4) + "250" + img_name.substr(img_name.size()-4, img_name.size());
+    string input_img_fn = input_img_folder + img_name;
     string img_name_no_ext = img_name.substr(0, img_name.size() - 4);
     string orient_img_fn=output_orient_img_folder+img_name_no_ext+".exr";
     string hairseg_fn=hair_seg_folder+img_name;
