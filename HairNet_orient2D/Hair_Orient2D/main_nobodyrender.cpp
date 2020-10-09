@@ -30,17 +30,15 @@ string intToStrLen5(int i)
 
 
 
-void save_orient_with_body_image(string orient_image_fn, string seg_image_fn, string out_orient_fn)
+void save_orient(string orient_image_fn, string seg_image_fn, string out_orient_fn)
 {
     cv::Mat orient_img=cv::imread(orient_image_fn, cv::IMREAD_UNCHANGED);
-    // cv::Mat body_img = cv::imread(body_image_fn, cv::IMREAD_GRAYSCALE);
     cv::Mat seg_img = cv::imread(seg_image_fn, cv::IMREAD_GRAYSCALE);
-    // cv::Mat orient_with_body_png(orient_img.rows, orient_img.cols, CV_8UC3);
-    // cv::Mat orient_with_body_exr(orient_img.rows, orient_img.cols, CV_32FC3);
     cv::Mat orient_png(orient_img.rows, orient_img.cols, CV_8UC3);
     cv::Mat orient_exr(orient_img.rows, orient_img.cols, CV_32FC3);
-    cout << "debug1" <<"\n";
-    cout << orient_img.rows << " x " << orient_img.cols << "\n";
+    // cout << "debug1" <<"\n";
+    // cout << orient_img.rows << " x " << orient_img.cols << "\n";
+
     for (int i=0;i<orient_img.cols;i++)
         for (int j=0;j<orient_img.rows;j++)
         {
@@ -49,10 +47,10 @@ void save_orient_with_body_image(string orient_image_fn, string seg_image_fn, st
             orient_exr.at<cv::Vec3f>(i,j)[0]=orient_img.at<cv::Vec3f>(i,j)[0];
             orient_exr.at<cv::Vec3f>(i,j)[1]=orient_img.at<cv::Vec3f>(i,j)[1];
             orient_exr.at<cv::Vec3f>(i,j)[2]=1.0;
-            
-            if(is_hair>122)
-            {
-                orient_exr.at<cv::Vec3f>(i,j)[2]=1.0;
+            save_orient
+            if(save_orientis_hair>122)
+            {save_orient
+               save_orient orient_exr.at<cv::Vec3f>(i,j)[2]=1.0;
             }
             else{
                 orient_exr.at<cv::Vec3f>(i,j)=cv::Vec3f(0,0,0);
@@ -61,42 +59,33 @@ void save_orient_with_body_image(string orient_image_fn, string seg_image_fn, st
         }
 
     // cv::imwrite(out_orient_fn+".exr", orient_exr);
-    cout<< "debug2" << "\n";
+    // cout<< "debug2" << "\n";
     cv::Mat orient_exr2(orient_img.rows, orient_img.cols, CV_32FC3);
     orient_exr2=orient_exr*255;
     orient_exr2.convertTo(orient_png, CV_8UC3);
     cv::imwrite(out_orient_fn+".png", orient_png);
 }
 
-void save_orient_with_body_image_from_folder(string input_img_folder, string hair_seg_folder, string hair_name0, string output_orient_img_folder)
+void save_orient_from_folder(string input_img_folder, string hair_seg_folder, string img_name, string output_orient_img_folder)
 {
+    string input_img_fn = input_img_folder + img_name.substr(0, img_name.size() -4) + "250" + img_name.substr(img_name.size()-4, img_name.size());
+    string img_name_no_ext = img_name.substr(0, img_name.size() - 4);
+    string orient_img_fn=output_orient_img_folder+img_name_no_ext+".exr";
+    string hairseg_fn=hair_seg_folder+img_name;
+    string orient_img_fn_png=output_orient_img_folder+img_name_no_ext;
 
-    string input_img_fn = input_img_folder + hair_name0.substr(0, hair_name0.size() -4) + "250" + hair_name0.substr(hair_name0.size()-4, hair_name0.size());
     cout << "filename : " + input_img_fn<<"\n";
-    // string hair_name0 = directory->d_name;
-    string hair_name = hair_name0.substr(0, hair_name0.size() - 4);
-    cout<<"Process "<<input_img_fn<<"\n";
-
-    // string body_img_fn = body_img_folder+hair_name+".png";
-
-    string orient_img_fn=output_orient_img_folder+hair_name+".exr";
-    cout << "orient_img_fn : " << orient_img_fn << "\n";
+    cout<<"Process "<<input_img_fn<<"\n";;
+    //cout << "orient_img_fn : " << orient_img_fn << "\n";
+    
     std::ifstream infile(orient_img_fn);
     if(!infile.good())
         COrient2D orient2D (input_img_fn.data(),orient_img_fn.data());
-   
 
-    string hairseg_fn=hair_seg_folder+hair_name0;
-    // string orient_img_with_body_fn=output_orient_img_with_body_folder+hair_name;
-    string orient_img_fn_png=output_orient_img_folder+hair_name;
-
-    cout<<"save orient with body image.\n";
-    cout<<"hairseg_fn : " << hairseg_fn<<"\n";
-    // cout<<orient_img_with_body_fn<<"\n";
-    // cout<<body_img_fn<<"\n";
-    cout<<"orient_img_fn : " << orient_img_fn<<"\n";
-    save_orient_with_body_image(orient_img_fn,hairseg_fn,orient_img_fn_png);
-
+    // cout<<"save orient \n";
+    // cout<<"hairseg_fn : " << hairseg_fn<<"\n";
+    // cout<<"orient_img_fn : " << orient_img_fn<<"\n";
+    save_orient(orient_img_fn, hairseg_fn, orient_img_fn_png);
 }
 
 cv::Vec3f get_sample(std::vector<cv::Vec3f> samples, std::vector<float> weights)
@@ -282,7 +271,7 @@ int main(int argc, char**argv) {
         string orient_exr = out_orient_img_folder + img_name.substr(0, img_name.size() - 4) + ".exr";
         
         cout << "compute orientation map in original size.\n";
-        save_orient_with_body_image_from_folder(img_folder, hair_seg_folder, img_name, out_orient_img_folder);        
+        save_orient_from_folder(img_folder, hair_seg_folder, img_name, out_orient_img_folder);        
         
         cout << "Resize orient imgs to 128*128.\n";
         resize_orient_imgs(orient_exr, 128, 128);
